@@ -28,7 +28,7 @@ __SOURCE_PATH__가 '/mnt/usb' 인 것을 보아 업데이트는 USB(충전기?)�
 |szPartNumber|0xc|0x10|vision board part number ( default : "ALL" )|
 
 
-### 1-2-2. 서브 헤더 ( stReadSubHeader )
+#### 1-2-2. 서브 헤더 ( stReadSubHeader )
 
 > "unpacking될 파일들의 추가적인 정보가 담겨져 있으며 0x8 크기를 가지게 된다."
 
