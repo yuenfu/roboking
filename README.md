@@ -1,5 +1,3 @@
-[TOC]
-
 ## 1. 업데이트 파일 구성
 
 [로보킹 업데이트](https://www.lgservice.co.kr/mobile/simple/selectSimpleSearchDetail.do?itemId=1434517084839&gubun=SCS&type=keyword)의 경우에는 아래의 3개 파일을 이용하여 업데이트를 하게 된다.
