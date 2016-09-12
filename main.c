@@ -10,6 +10,8 @@ void view_main_structure(struct stMainHeader);
 void get_file_structure(FILE *, struct stReadSubHeader *);
 void view_file_structure(struct stReadSubHeader);
 
+void get_file_name(FILE *,unsigned char *, int);
+
 int main(int argc, char **argv)
 {
 	if( argc < 2 )
@@ -28,10 +30,43 @@ int main(int argc, char **argv)
 	struct stMainHeader main_header;
 	get_main_structure(fp, &main_header);
 	view_main_structure(main_header);
-	
-	struct stReadSubHeader file_header;
-	get_file_structure(fp, &file_header);
-	view_file_structure(file_header);	
+	printf("\n");
+
+	while( !feof(fp) )
+	{
+		struct stReadSubHeader file_header;
+		get_file_structure(fp, &file_header);
+		view_file_structure(file_header);
+		
+		unsigned char * file_name = (unsigned char *)malloc(sizeof(unsigned char) * file_header.unPathLength);
+		get_file_name(fp, file_name, file_header.unPathLength);
+		printf("%s", file_name);
+		printf("\n");
+		return -1;
+	}
+}
+
+void get_file_name(FILE * fp, unsigned char * name, int size)
+{
+	int i;
+
+	if( fp )
+	{
+		fread(name, 1, size, fp);
+	}
+
+	for (i = 0; i < size; i++)
+	{
+		if (name[i] >= 0x80)
+		{
+			name[i] = (-1 - name[i]) & 0xff;
+		}
+		else
+		{
+			name[i] = (name[i] + -0x80) & 0xff;
+		}
+	}
+	name[i] = '\x00';
 }
 
 void get_main_structure(FILE * fp, struct stMainHeader * main_header)
