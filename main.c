@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
-
+#include <unistd.h>
 
 void get_main_structure(FILE *, struct stMainHeader *);
 void view_main_structure(struct stMainHeader);
@@ -15,9 +15,9 @@ void get_file_data(FILE *,unsigned char *, int);
 
 int main(int argc, char **argv)
 {
-	if( argc < 2 )
+	if( argc < 3 )
 	{
-		printf("[+] Usage : %s update.dat", argv[0]);
+		printf("[+] Usage : %s ./update.dat ./result_directory", argv[0]);
 		return 0;
 	}
 	
@@ -28,10 +28,18 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
+	int res = mkdir(argv[2], 0777);
+	if( res == -1 )
+	{
+		printf("[+] Directory Error : %s", argv[2]);
+		return 0;
+	}
+
 	struct stMainHeader main_header;
 	get_main_structure(fp, &main_header);
+	view_main_structure(main_header);
 	printf("\n");
-
+	
 	int count = 0;
 	do
 	{
@@ -46,16 +54,23 @@ int main(int argc, char **argv)
 		unsigned char * file_data = (unsigned char *)malloc(sizeof(unsigned char) * file_header.unDataSize);
 		get_file_data(fp, file_data, file_header.unDataSize);
 		
-		if( !file_header.unDataSize )
+		FILE * dest_fp;	
+		unsigned char dest_name[100];
+		if ( file_header.unDataSize == 0 )
 		{
-			printf("[DIR] ");
+			printf("[DIR] %s\n", file_name);
 		}
-		printf("%s\n\n", file_name);		
-		
+		else
+		{
+			printf("%s\n", file_name);
+		}
+
 	}while( !feof(fp) );
 
 	printf("[*] File Count : %d\n", count);
 	printf("[*] File Size : 0x%lx \n", ftell(fp));
+
+	fclose(fp);
 }
 
 void get_file_data(FILE* fp, unsigned char *data, int size)
