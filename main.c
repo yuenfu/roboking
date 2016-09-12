@@ -11,6 +11,7 @@ void get_file_structure(FILE *, struct stReadSubHeader *);
 void view_file_structure(struct stReadSubHeader);
 
 void get_file_name(FILE *,unsigned char *, int);
+void get_file_data(FILE *,unsigned char *, int);
 
 int main(int argc, char **argv)
 {
@@ -29,20 +30,50 @@ int main(int argc, char **argv)
 
 	struct stMainHeader main_header;
 	get_main_structure(fp, &main_header);
-	view_main_structure(main_header);
 	printf("\n");
 
-	while( !feof(fp) )
+	int count = 0;
+	do
 	{
+		count += 1;
 		struct stReadSubHeader file_header;
 		get_file_structure(fp, &file_header);
-		view_file_structure(file_header);
-		
+		file_header.unDataSize = (file_header.unDataSize == 0xffffffff) ? 0 : file_header.unDataSize;
+
 		unsigned char * file_name = (unsigned char *)malloc(sizeof(unsigned char) * file_header.unPathLength);
 		get_file_name(fp, file_name, file_header.unPathLength);
-		printf("%s", file_name);
-		printf("\n");
-		return -1;
+		
+		unsigned char * file_data = (unsigned char *)malloc(sizeof(unsigned char) * file_header.unDataSize);
+		get_file_data(fp, file_data, file_header.unDataSize);
+		
+		if( !file_header.unDataSize )
+		{
+			printf("[DIR] ");
+		}
+		printf("%s\n\n", file_name);		
+		
+	}while( !feof(fp) );
+
+	printf("[*] File Count : %d\n", count);
+	printf("[*] File Size : 0x%lx \n", ftell(fp));
+}
+
+void get_file_data(FILE* fp, unsigned char *data, int size)
+{
+	if( fp )
+	{
+		fread(data, 1, size, fp);
+	}
+	for(int i=0;i<size;i++)
+	{
+		if( data[i] < 0x80 )
+		{
+			data[i] = (data[i] + -128) & 0xff;
+		}
+		else
+		{
+			data[i] = (-1 - data[i])  & 0xff;
+		}
 	}
 }
 
