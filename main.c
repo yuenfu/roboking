@@ -7,6 +7,9 @@
 void get_main_structure(FILE *, struct stMainHeader *);
 void view_main_structure(struct stMainHeader);
 
+void get_file_structure(FILE *, struct stReadSubHeader *);
+void view_file_structure(struct stReadSubHeader);
+
 int main(int argc, char **argv)
 {
 	if( argc < 2 )
@@ -25,7 +28,10 @@ int main(int argc, char **argv)
 	struct stMainHeader main_header;
 	get_main_structure(fp, &main_header);
 	view_main_structure(main_header);
-
+	
+	struct stReadSubHeader file_header;
+	get_file_structure(fp, &file_header);
+	view_file_structure(file_header);	
 }
 
 void get_main_structure(FILE * fp, struct stMainHeader * main_header)
@@ -49,3 +55,17 @@ void view_main_structure(struct stMainHeader header)
 	printf("\n");
 }
 
+void get_file_structure(FILE *fp, struct stReadSubHeader * file_header)
+{
+	if( fp )
+	{
+		fread(file_header, 1, sizeof(struct stReadSubHeader), fp);
+	}
+}
+
+void view_file_structure(struct stReadSubHeader header)
+{
+	printf("Data Size : 0x%x\n", header.unDataSize);
+	printf("Path Length : 0x%x\n", header.unPathLength);
+	printf("Flag : 0x%x\n", header.unFlag);
+}
