@@ -1,4 +1,6 @@
 #include "roboking.h"
+#include "util.h"
+
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
@@ -28,11 +30,17 @@ int main(int argc, char **argv)
 		return 0;
 	}
 
-	int res = mkdir(argv[2], 0777);
-	if( res == -1 )
+	unsigned char dest_name[100];
+	if( access(argv[2], F_OK) == 0 )
 	{
 		printf("[+] Directory Error : %s", argv[2]);
 		return 0;
+	}
+	else
+	{
+		sprintf(dest_name, "./%s/usr", argv[2]);
+		printf("%s", dest_name);
+		create_sub_directories(dest_name);
 	}
 
 	struct stMainHeader main_header;
@@ -53,18 +61,26 @@ int main(int argc, char **argv)
 		
 		unsigned char * file_data = (unsigned char *)malloc(sizeof(unsigned char) * file_header.unDataSize);
 		get_file_data(fp, file_data, file_header.unDataSize);
-		
-		FILE * dest_fp;	
-		unsigned char dest_name[100];
+
+		if( !str_ascii(file_name) )
+		{
+			continue;
+		}
+
+		sprintf(dest_name, "./%s%s", argv[2], file_name);		
+		printf("[%d] %s\n", count , dest_name);
 		if ( file_header.unDataSize == 0 )
 		{
-			printf("[DIR] %s\n", file_name);
+			create_sub_directories(dest_name);
 		}
 		else
 		{
-			printf("%s\n", file_name);
+			FILE * dest_fp;	
+			dest_fp = fopen(dest_name, "wb");
+			fwrite(file_data, 1, file_header.unDataSize, dest_fp);
+			fclose(dest_fp);
 		}
-
+			
 	}while( !feof(fp) );
 
 	printf("[*] File Count : %d\n", count);
