@@ -39,3 +39,4 @@ __SOURCE_PATH__가 '/mnt/usb' 인 것을 보아 업데이트는 USB(충전기?)�
 |unFlag|6|2|?|
 
 
+
