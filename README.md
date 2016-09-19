@@ -38,5 +38,7 @@ __SOURCE_PATH__가 '/mnt/usb' 인 것을 보아 업데이트는 USB(충전기?)�
 |unPathLength|4|2|파일이름 길이|
 |unFlag|6|2|?|
 
+## Reference
 
+[firmware](https://www.dropbox.com/s/a86on4yo90py0s1/FullBackupFW16552.zip?dl=0)
 
