@@ -7,7 +7,7 @@
 
 > ".dat , .axf 파일 확인 후에 업데이트를 하기 위해서 파일을 실행한다."
 
-__SOURCE_PATH__가 '/mnt/usb' 인 것을 보아 업데이트는 USB(충전기?)를 통해 업데이트가 진행 되는 것을 알 수 있다.
+__SOURCE_PATH__가 '/mnt/usb' 인 것을 보아 업데이트는 USB를 통해 업데이트가 진행 되는 것을 알 수 있다.
 
 ### 1-2. Update.dat
 
@@ -37,6 +37,12 @@ __SOURCE_PATH__가 '/mnt/usb' 인 것을 보아 업데이트는 USB(충전기?)�
 |unDataSize|0|4|파일크기|
 |unPathLength|4|2|파일이름 길이|
 |unFlag|6|2|?|
+
+### 1-3. Update.axf
+
+> "update.dat 파일을 언패킹하고 펌웨어 업데이트 작업을 수행하는 바이너리"
+
+~~~
 
 ## Reference
 
