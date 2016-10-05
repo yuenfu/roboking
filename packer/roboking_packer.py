@@ -1,5 +1,6 @@
 import os
 import sys
+import struct 
 
 class MainHeader:
 	def __init__(self):
@@ -12,7 +13,7 @@ class SubHeader:
 	def __init__(self, path):
 		self.unDataSize	= ""
 		self.unPathLength = ""
-		self.unFlag = ""		
+		self.unFlag = "\x00\x00"		
 		self.file_name = ""
 		self.data = ""
 
@@ -25,10 +26,22 @@ class SubHeader:
 			self.data = f.read()
 		self.unDataSize = len(self.data)
 
+	def create_form(self):
+		data = ""
+		data += struct.pack("<L", self.unDataSize)
+		data += struct.pack("<H", self.unPathLength)
+		data += self.unFlag
+		data += self.enc(self.file_name)
+		data += self.enc(self.data)	
+		return data
+
 	def enc(self, data):
 		ret_data = ""
 		for i in data:
-			ret_data += chr(~ord(i) & 0xff)
+			if ord(i) >= 0x80:
+				ret_data += struct.pack("<B", (ord(i) - 0x80 & 0xff))
+			else:
+				ret_data += struct.pack("<B", (~ord(i) & 0xff))
 		return ret_data
 
 	def view(self):
@@ -65,7 +78,9 @@ class Packer:
 		return self.p_dir
 
 p = Packer(sys.argv[1])
-
+f=open("r","wb")
 for file in p.get_file_list():
 	s = SubHeader(file)
 	s.view()
+	f.write(s.create_form())
+f.close()
