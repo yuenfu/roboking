@@ -3,11 +3,29 @@ import sys
 import struct 
 
 class MainHeader:
-	def __init__(self):
+	def __init__(self,sub_data):
 		self.unRevision = ""
 		self.unFirmwareSize = ""
 		self.unChecksum = ""
 		self.szPartNumber = ""
+		self.sub_data = sub_data
+
+		self.set_data()
+
+	def set_data(self):
+		self.unRevision = "\x5e\x3f" # ??
+		self.unFirmwareSize = len(self.sub_data)
+		self.unChecksum = self.get_checksum()
+		self.szPartNumber = self.get_part_num()
+	
+	def get_checksum(self):
+		pass
+
+	def get_part_num(self):
+		pass
+
+	def view(self):
+		pass
 
 class SubHeader:
 	def __init__(self, path):
@@ -22,9 +40,13 @@ class SubHeader:
 	def set_data(self, path):
 		self.file_name = path[path.find("/"):]
 		self.unPathLength = len(self.file_name)
-		with open(path, "rb") as f:
-			self.data = f.read()
+		if os.path.isfile(path):
+			with open(path, "rb") as f:
+				self.data = f.read()
+		else:
+			self.data = ""
 		self.unDataSize = len(self.data)
+		
 
 	def create_form(self):
 		data = ""
@@ -51,6 +73,7 @@ class SubHeader:
 		print "[+] unFlag : " + self.unFlag
 		print "[+] Data : " + self.data[:10]
 		print "\n"
+
 class Packer:
 	def __init__(self, path):
 		self.m = MainHeader()
@@ -71,16 +94,20 @@ class Packer:
 		except:
 			print "Except"
 
-	def get_file_list(self):
-		return self.p_file
+	def create_pack_data(self):
+		# Main Header
+		# Sub Headers
+		sub_header = ""
+		for file in self.get_file_list():
+			s = SubHeader(file)
+			s.view()
+			sub_header += s.create_form()
+		f = open("r", "wb")
+		f.write(sub_header)
+		f.close()
 
-	def get_dir_list(self):
-		return self.p_dir
+	def get_file_list(self):
+		return self.p_dir + self.p_file
 
 p = Packer(sys.argv[1])
-f=open("r","wb")
-for file in p.get_file_list():
-	s = SubHeader(file)
-	s.view()
-	f.write(s.create_form())
-f.close()
+p.create_pack_data()
